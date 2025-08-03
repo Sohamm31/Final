@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>EngiConnect - Empower Your Engineering Journey</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', 'Segoe UI', 'Montserrat', Arial, sans-serif;
+      margin: 0;
+      background: #1a1a2e; /* Dark blue background */
+      color: #e0e0e0;
+      overflow-x: hidden;
+    }
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(20, 20, 40, 0.75);
+      padding: 1rem 2.5rem;
+      position: sticky; top: 0; z-index: 100;
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .nav-logo {
+      font-weight: 700;
+      font-size: 1.5rem;
+      letter-spacing: 1px;
+      color: #fff;
+    }
+    .navbar ul {
+      list-style: none;
+      display: flex;
+      gap: 2.5rem;
+      margin: 0;
+      padding: 0;
+      align-items: center;
+    }
+    .navbar a, .navbar .nav-text, .navbar .logout-btn {
+      color: #fafbfc;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s, text-shadow 0.3s;
+      font-size: 1rem;
+      position: relative;
+    }
+    .navbar a:not(.cta-button-nav)::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: -5px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #56CCF2;
+        transition: width 0.3s ease-in-out;
+    }
+    .navbar a:not(.cta-button-nav):hover::after {
+        width: 100%;
+    }
+    .navbar a:not(.cta-button-nav):hover {
+      color: #56CCF2;
+      text-shadow: 0 0 5px rgba(86, 204, 242, 0.5);
+    }
+    .cta-button-nav {
+        background: linear-gradient(135deg, #2F80ED, #56CCF2);
+        padding: 0.5rem 1.2rem;
+        border-radius: 50px;
+        color: white;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    .cta-button-nav:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(86, 204, 242, 0.3);
+    }
+    .logout-btn {
+        background: transparent;
+        border: 1px solid var(--secondary-color);
+        padding: 0.4rem 1rem;
+        border-radius: 50px;
+        cursor: pointer;
+    }
+    .hero {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 450px;
+      padding: 4rem 2rem;
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, #2F80ED 0%, #56CCF2 100%);
+      text-align: center;
+    }
+    .hero-content h1 {
+      font-size: 3.5rem;
+      font-weight: 700;
+      margin: 0 0 1rem 0;
+      color: #fff;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    .hero-content p {
+      font-size: 1.25rem;
+      margin: 0 0 2rem 0;
+      opacity: 0.9;
+      max-width: 600px;
+    }
+    .cta-btn {
+      background: #fff;
+      color: #2F80ED;
+      padding: 0.8rem 2.5rem;
+      border-radius: 50px;
+      border: none;
+      font-size: 1.1rem;
+      font-weight: 600;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .cta-btn:hover {
+      background: #f0f0f0;
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+    }
+    .features-section {
+        padding: 5rem 2rem;
+    }
+    .section-title {
+        text-align: center;
+        font-size: 2.5rem;
+        margin-bottom: 3rem;
+        font-weight: 700;
+        color: #fff;
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit,minmax(300px,1fr));
+      gap: 2rem;
+      max-width: 1200px;
+      margin: auto;
+    }
+    .feature-card {
+      background: rgba(40, 42, 60, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 2.5rem 2rem;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(5px);
+      color: #fff;
+      transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .feature-card .icon {
+      font-size: 3rem;
+      margin-bottom: 1.5rem;
+      background: -webkit-linear-gradient(135deg, #2F80ED, #56CCF2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .feature-card h3 {
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+    .feature-card p {
+      font-size: 1rem;
+      opacity: 0.8;
+      line-height: 1.6;
+      flex-grow: 1;
+    }
+    .feature-card .cta-button {
+      margin-top: 1.5rem;
+      padding: 0.6rem 1.8rem;
+      background: linear-gradient(135deg, #2F80ED, #56CCF2);
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(47, 128, 237, 0.3);
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .feature-card .cta-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(86, 204, 242, 0.4);
+    }
+    .feature-card:hover {
+      transform: translateY(-10px);
+      background: rgba(45, 48, 70, 0.7);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+    }
+    .menu-toggle { display: none; }
+
+    @media (max-width: 992px) {
+        .navbar { padding: 1rem 1.5rem; }
+        .navbar ul { gap: 1.5rem; }
+    }
+
+    @media (max-width: 768px) {
+      .hero-content h1 { font-size: 2.5rem; }
+      .features-grid { grid-template-columns: 1fr; }
+      .navbar {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .navbar ul {
+        display: none;
+        flex-direction: column;
+        gap: 0;
+        background: rgba(20, 20, 40, 0.98);
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        padding: 1rem 0;
+      }
+      .navbar ul.active {
+        display: flex;
+      }
+      .navbar ul li {
+        width: 100%;
+        text-align: center;
+      }
+      .navbar ul a {
+        padding: 1rem;
+        display: block;
+        width: 100%;
+      }
+      .navbar a:hover::after { width: 50px; }
+      .menu-toggle {
+        display: block;
+        background: none;
+        font-size: 1.8rem;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-logo">EngiConnect</div>
+    <button type="button" class="menu-toggle" aria-label="Menu">&#9776;</button>
+    <ul id="nav-links">
+      <li><a href="#mock-interview">🎤 Mock Interview</a></li>
+      <li><a href="#github-analyser">💻 Github Analyser</a></li>
+      <li><a href="#community-qa">💬 Q&A</a></li>
+      <li><a href="/chatbot">🤖 Chatbot</a></li>
+      <!-- This will be dynamically replaced by JS -->
+      <li id="auth-nav-link"><a href="/login" class="cta-button-nav">Login / Signup</a></li>
+    </ul>
+  </nav>
+
+  <header class="hero">
+    <div class="hero-content">
+      <h1>Empower Your Engineering Journey</h1>
+      <p>The all-in-one platform for interviews, code analysis, collaborative learning, and career growth.</p>
+      <a href="#main-features" class="cta-btn">Explore Features</a>
+    </div>
+  </header>
+
+  <main id="main-features" class="features-section">
+    <h2 class="section-title">Core Features</h2>
+    <div class="features-grid">
+      <div class="feature-card" id="mock-interview">
+        <div class="icon">🎤</div>
+        <h3>Mock Interview System</h3>
+        <p>Practice real-world interviews with AI-driven, personalized feedback and track your progress over time.</p>
+        <a href="#" class="cta-button">Start Now</a>
+      </div>
+      <div class="feature-card" id="github-analyser">
+        <div class="icon">💻</div>
+        <h3>Github Code Analyser</h3>
+        <p>Chat with any public repository. Understand complex codebases, get explanations, and accelerate your learning.</p>
+        <a href="#" class="cta-button">Analyze Repo</a>
+      </div>
+      <div class="feature-card" id="community-qa">
+        <div class="icon">💬</div>
+        <h3>Community Q&A</h3>
+        <p>Ask, answer, and collaborate on challenging engineering problems with a community of peers and experts.</p>
+        <a href="#" class="cta-button">Join Now</a>
+      </div>
+      <div class="feature-card" id="chatbot">
+        <div class="icon">🤖</div>
+        <h3>PDF & Video Chatbot</h3>
+        <p>Upload your lecture notes, research papers, or link a video to get summaries and ask questions instantly.</p>
+        <a href="/chatbot" class="cta-button">Try Chatbot</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            const targetElement = document.querySelector(targetId);
+            if(targetElement){
+                targetElement.scrollIntoView({
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+
+    // Mobile menu toggle
+    const menuToggle = document.querySelector('.menu-toggle');
+    const navLinks = document.querySelector('#nav-links');
+    if (menuToggle && navLinks) {
+        menuToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+    }
+
+    // *** DYNAMIC NAVBAR SCRIPT ***
+    document.addEventListener('DOMContentLoaded', async () => {
+        const token = localStorage.getItem('accessToken');
+        const authNavLink = document.getElementById('auth-nav-link');
+
+        if (token) {
+            try {
+                const response = await fetch('/api/v1/auth/users/me', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    const user = await response.json();
+                    // Replace the login button with user info and logout button
+                    authNavLink.innerHTML = `
+                        <span class="nav-text" style="margin-right: 1rem;">${user.username}</span>
+                        <button type="button" id="logout-button" class="logout-btn">Logout</button>
+                    `;
+                    
+                    document.getElementById('logout-button').addEventListener('click', () => {
+                        localStorage.removeItem('accessToken');
+                        window.location.reload(); // Reload the page to reset the state
+                    });
+
+                } else {
+                    // Token is invalid or expired, clear it
+                    localStorage.removeItem('accessToken');
+                }
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+                localStorage.removeItem('accessToken');
+            }
+        }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot - EngiConnect</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2F80ED;
+            --secondary-color: #56CCF2;
+            --dark-bg: #1a1a2e;
+            --light-text: #e0e0e0;
+            --card-bg: rgba(40, 42, 60, 0.75);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --error-color: #e74c3c;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            background-color: var(--dark-bg);
+            color: var(--light-text);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- Sidebar Styles --- */
+        .sidebar {
+            width: 260px;
+            background-color: rgba(20, 20, 40, 0.85);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+            flex-shrink: 0;
+        }
+
+        .sidebar-header .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .new-chat-btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 0.6rem 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            width: 100%;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .new-chat-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(86, 204, 242, 0.3);
+        }
+
+        .chat-history {
+            flex-grow: 1;
+            overflow-y: auto;
+            margin-top: 1.5rem;
+        }
+        
+        .chat-history h3 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: var(--light-text);
+            opacity: 0.6;
+            margin-bottom: 1rem;
+        }
+
+        .chat-history-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .chat-history-item {
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .chat-history-item.active,
+        .chat-history-item:hover {
+            background-color: var(--card-bg);
+        }
+
+        /* --- Main Chat Area Styles --- */
+        .chat-container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .chat-header {
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--border-color);
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .chat-messages {
+            flex-grow: 1;
+            padding: 2rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .message {
+            display: flex;
+            gap: 1rem;
+            max-width: 80%;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .message .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--card-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        
+        .message.user .avatar {
+             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        }
+
+        .message .text {
+            background-color: var(--card-bg);
+            padding: 1rem;
+            border-radius: 12px;
+            line-height: 1.6;
+        }
+        
+        .message.bot.thinking .text {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .dot-flashing {
+            position: relative;
+            width: 5px;
+            height: 5px;
+            border-radius: 5px;
+            background-color: var(--light-text);
+            color: var(--light-text);
+            animation: dotFlashing 1s infinite linear alternate;
+            animation-delay: .5s;
+        }
+
+        .dot-flashing::before, .dot-flashing::after {
+            content: '';
+            display: inline-block;
+            position: absolute;
+            top: 0;
+        }
+
+        .dot-flashing::before {
+            left: -10px;
+            width: 5px;
+            height: 5px;
+            border-radius: 5px;
+            background-color: var(--light-text);
+            color: var(--light-text);
+            animation: dotFlashing 1s infinite alternate;
+            animation-delay: 0s;
+        }
+
+        .dot-flashing::after {
+            left: 10px;
+            width: 5px;
+            height: 5px;
+            border-radius: 5px;
+            background-color: var(--light-text);
+            color: var(--light-text);
+            animation: dotFlashing 1s infinite alternate;
+            animation-delay: 1s;
+        }
+
+        @keyframes dotFlashing {
+            0% { background-color: var(--light-text); }
+            50%, 100% { background-color: rgba(224, 224, 224, 0.2); }
+        }
+
+
+        .chat-input-area {
+            padding: 1.5rem 2rem;
+            border-top: 1px solid var(--border-color);
+            flex-shrink: 0;
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 1rem;
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 0.5rem;
+            align-items: center;
+        }
+        
+        .chat-input {
+            flex-grow: 1;
+            background: transparent;
+            border: none;
+            color: var(--light-text);
+            font-size: 1rem;
+            padding: 0.5rem;
+            outline: none;
+        }
+        
+        .send-btn {
+            background: var(--primary-color);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+        }
+        
+        .send-btn:hover { background: var(--secondary-color); }
+        .send-btn:disabled { background: #555; cursor: not-allowed; }
+
+        /* Initial View for Upload */
+        .initial-view {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            height: 100%;
+            padding: 2rem;
+        }
+
+        .initial-view h2 { font-size: 2rem; margin-bottom: 1rem; }
+        .initial-view p { color: var(--light-text); opacity: 0.7; margin-bottom: 2rem; max-width: 500px; }
+        .upload-options { display: flex; gap: 1.5rem; align-items: center; }
+
+        .upload-box {
+            background-color: var(--card-bg);
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+        
+        .upload-box:hover { background-color: rgba(45, 48, 70, 0.9); border-color: var(--primary-color); }
+        .upload-box.loading {
+            pointer-events: none;
+            opacity: 0.6;
+        }
+        .upload-box .icon { font-size: 2.5rem; margin-bottom: 1rem; }
+        .link-input-wrapper { display: flex; align-items: center; gap: 0.5rem; width: 300px; }
+        .link-input { flex-grow: 1; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--border-color); background-color: #2c2e43; color: var(--light-text); }
+        .submit-link-btn { padding: 0.8rem 1.2rem; border-radius: 8px; border: none; background-color: var(--primary-color); color: white; font-weight: 600; cursor: pointer; }
+        
+        /* Status & Error Messages */
+        .status-message {
+            text-align: center;
+            margin-top: 1rem;
+            padding: 0.5rem;
+            border-radius: 8px;
+            display: none; /* Hidden by default */
+        }
+        .status-message.error {
+            background-color: rgba(231, 76, 60, 0.3);
+            color: var(--error-color);
+            display: block;
+        }
+        .status-message.loading {
+            background-color: rgba(86, 204, 242, 0.2);
+            color: var(--secondary-color);
+            display: block;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar { position: absolute; left: -100%; top: 0; bottom: 0; z-index: 200; transition: left 0.3s ease-in-out; }
+            .sidebar.open { left: 0; }
+            .chat-header { padding-left: 4rem; }
+            .menu-toggle-btn { display: block; position: absolute; top: 1rem; left: 1rem; z-index: 201; background: none; border: none; color: white; font-size: 1.5rem; }
+            .upload-options { flex-direction: column; }
+        }
+        .menu-toggle-btn { display: none; }
+    </style>
+</head>
+<body>
+    <button type="button" class="menu-toggle-btn" onclick="toggleSidebar()">&#9776;</button>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo" onclick="goHome()">EngiConnect</div>
+        </div>
+        <button type="button" class="new-chat-btn" id="new-chat-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>
+            New Chat
+        </button>
+        <div class="chat-history">
+            <h3>History</h3>
+            <ul class="chat-history-list" id="chat-history-list">
+                <!-- History will be loaded here -->
+            </ul>
+        </div>
+    </aside>
+
+    <main class="chat-container" id="main-content">
+        <!-- Content will be swapped here by JS -->
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- CONFIG ---
+            const API_BASE_URL = "/api/v1/chatbot";
+            const token = localStorage.getItem('accessToken');
+
+            // --- DOM ELEMENTS ---
+            const mainContent = document.getElementById('main-content');
+            const newChatBtn = document.getElementById('new-chat-btn');
+            const chatHistoryList = document.getElementById('chat-history-list');
+
+            // --- STATE ---
+            let sessionId = null;
+            let isLoading = false;
+
+            // --- TEMPLATES ---
+            const initialViewHTML = `
+                <div class="initial-view" id="initial-view">
+                    <h2>PDF & Video Chatbot</h2>
+                    <p>Upload a PDF document or paste a YouTube link to start a conversation with your learning materials.</p>
+                    <div class="upload-options">
+                        <input type="file" id="pdf-upload-input" accept=".pdf" style="display: none;">
+                        <div class="upload-box" id="pdf-upload-box">
+                            <div class="icon">📄</div>
+                            <div><strong>Upload PDF</strong></div>
+                        </div>
+                        <div class="or-divider">OR</div>
+                        <div class="upload-box" id="youtube-upload-box">
+                             <div class="icon">🔗</div>
+                             <div class="link-input-wrapper">
+                                <input type="text" class="link-input" id="youtube-link-input" placeholder="Paste YouTube URL...">
+                                <button type="button" class="submit-link-btn" id="youtube-submit-btn">Go</button>
+                             </div>
+                        </div>
+                    </div>
+                    <div id="upload-status" class="status-message"></div>
+                </div>`;
+
+            const chatViewHTML = `
+                <div class="chat-view" id="chat-view" style="display: flex; flex-direction: column; height: 100%;">
+                    <header class="chat-header" id="chat-header"></header>
+                    <div class="chat-messages" id="chat-messages"></div>
+                    <footer class="chat-input-area">
+                        <div class="input-wrapper">
+                            <input type="text" id="chat-input" class="chat-input" placeholder="Ask a follow-up question...">
+                            <button type="button" class="send-btn" id="send-btn" title="Send message">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11zM6.636 10.07l2.761 4.338L14.13 2.576 6.636 10.07zm6.787-8.201L1.591 6.602l4.339 2.76 7.494-7.493z"/></svg>
+                            </button>
+                        </div>
+                    </footer>
+                </div>`;
+
+            // --- API CALL HELPER ---
+            const apiCall = async (endpoint, method = 'GET', body = null) => {
+                const headers = { 'Authorization': `Bearer ${token}` };
+                const options = { method, headers };
+                if (body) {
+                    if (body instanceof FormData) {
+                        options.body = body;
+                    } else {
+                        headers['Content-Type'] = 'application/json';
+                        options.body = JSON.stringify(body);
+                    }
+                }
+                const response = await fetch(endpoint, options);
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || 'An API error occurred.');
+                }
+                return response.json();
+            };
+
+            // --- UI FUNCTIONS ---
+            const showInitialView = (errorMessage = '') => {
+                mainContent.innerHTML = initialViewHTML;
+                isLoading = false;
+                sessionId = null;
+                document.getElementById('pdf-upload-box').addEventListener('click', () => document.getElementById('pdf-upload-input').click());
+                document.getElementById('pdf-upload-input').addEventListener('change', handlePdfUpload);
+                document.getElementById('youtube-submit-btn').addEventListener('click', handleYoutubeSubmit);
+                if (errorMessage) {
+                    const uploadStatus = document.getElementById('upload-status');
+                    uploadStatus.textContent = errorMessage;
+                    uploadStatus.className = 'status-message error';
+                }
+            };
+
+            const showChatView = (headerText) => {
+                mainContent.innerHTML = chatViewHTML;
+                document.getElementById('chat-header').textContent = headerText;
+                document.getElementById('send-btn').addEventListener('click', handleSendMessage);
+                document.getElementById('chat-input').addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleSendMessage();
+                    }
+                });
+            };
+
+            const setUiLoading = (loading, message = '') => {
+                isLoading = loading;
+                const pdfBox = document.getElementById('pdf-upload-box');
+                const youtubeBtn = document.getElementById('youtube-submit-btn');
+                const uploadStatus = document.getElementById('upload-status');
+                if (pdfBox) pdfBox.classList.toggle('loading', loading);
+                if (youtubeBtn) youtubeBtn.disabled = loading;
+                if (uploadStatus) {
+                    uploadStatus.textContent = message;
+                    uploadStatus.className = loading ? 'status-message loading' : 'status-message';
+                }
+            };
+
+            const setUiChatReady = () => {
+                isLoading = false;
+                const chatInput = document.getElementById('chat-input');
+                const sendBtn = document.getElementById('send-btn');
+                if (chatInput) chatInput.disabled = false;
+                if (sendBtn) sendBtn.disabled = false;
+                if (chatInput) chatInput.focus();
+            };
+
+            // --- HISTORY FUNCTIONS ---
+            const loadHistory = async () => {
+                try {
+                    const sessions = await apiCall(`${API_BASE_URL}/history`);
+                    chatHistoryList.innerHTML = '';
+                    sessions.forEach(session => {
+                        const li = document.createElement('li');
+                        li.className = 'chat-history-item';
+                        li.textContent = session.source_name;
+                        li.dataset.sessionId = session.id;
+                        li.dataset.sourceName = session.source_name;
+                        li.addEventListener('click', () => loadConversation(session.id, session.source_name));
+                        chatHistoryList.appendChild(li);
+                    });
+                } catch (error) {
+                    console.error("Failed to load history:", error);
+                }
+            };
+
+            const loadConversation = async (sid, sourceName) => {
+                sessionId = sid;
+                showChatView(`Chat with "${sourceName}"`);
+                try {
+                    const messages = await apiCall(`${API_BASE_URL}/session/${sid}`);
+                    messages.forEach(msg => {
+                        addMessageToUI('user', msg.user_message);
+                        addMessageToUI('bot', msg.ai_response);
+                    });
+                    setUiChatReady();
+                } catch (error) {
+                    addMessageToUI('bot', `Error loading conversation: ${error.message}`);
+                }
+            };
+
+            // --- EVENT HANDLERS ---
+            const handlePdfUpload = async (event) => {
+                const file = event.target.files[0];
+                if (!file || isLoading) return;
+
+                setUiLoading(true, 'Processing PDF...');
+                const formData = new FormData();
+                formData.append('file', file);
+
+                try {
+                    const data = await apiCall(`${API_BASE_URL}/upload-pdf`, 'POST', formData);
+                    sessionId = data.session_id;
+                    showChatView(`Chat with "${data.filename}"`);
+                    addMessageToUI('bot', data.message);
+                    setUiChatReady();
+                    loadHistory(); // Refresh history list
+                } catch (error) {
+                    showInitialView(error.message);
+                }
+            };
+
+            const handleYoutubeSubmit = async () => {
+                const youtubeLinkInput = document.getElementById('youtube-link-input');
+                const url = youtubeLinkInput.value.trim();
+                if (!url || isLoading) return;
+
+                setUiLoading(true, 'Processing YouTube URL...');
+                try {
+                    const data = await apiCall(`${API_BASE_URL}/process-youtube`, 'POST', { url });
+                    sessionId = data.session_id;
+                    const videoTitle = `YouTube Video`;
+                    showChatView(`Chat with "${videoTitle}"`);
+                    addMessageToUI('bot', data.message);
+                    setUiChatReady();
+                    loadHistory(); // Refresh history list
+                } catch (error) {
+                    showInitialView(error.message);
+                }
+            };
+
+            const handleSendMessage = async () => {
+                const chatInput = document.getElementById('chat-input');
+                const messageText = chatInput.value.trim();
+                if (!messageText || isLoading || !sessionId) return;
+
+                addMessageToUI('user', messageText);
+                chatInput.value = '';
+                isLoading = true;
+                chatInput.disabled = true;
+                document.getElementById('send-btn').disabled = true;
+                addMessageToUI('bot', '...', true);
+
+                try {
+                    const data = await apiCall(`${API_BASE_URL}/chat`, 'POST', { session_id: sessionId, message: messageText });
+                    updateLastBotMessage(data.response);
+                    setUiChatReady();
+                } catch (error) {
+                    updateLastBotMessage(`Sorry, an error occurred: ${error.message}`);
+                    setUiChatReady();
+                }
+            };
+
+            // --- UTILITY FUNCTIONS ---
+            function addMessageToUI(sender, text, isThinking = false) {
+                const chatMessages = document.getElementById('chat-messages');
+                if (!chatMessages) return;
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${sender}`;
+                const avatar = `<div class="avatar">${sender === 'user' ? 'U' : '🤖'}</div>`;
+                let textContent;
+                if (isThinking) {
+                    messageDiv.classList.add('thinking');
+                    textContent = `<div class="text"><div class="dot-flashing"></div></div>`;
+                } else {
+                    textContent = `<div class="text">${text.replace(/\n/g, '<br>')}</div>`;
+                }
+                messageDiv.innerHTML = avatar + textContent;
+                chatMessages.appendChild(messageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+
+            function updateLastBotMessage(text) {
+                const thinkingMessage = document.querySelector('.message.bot.thinking');
+                if (thinkingMessage) {
+                    thinkingMessage.remove();
+                    addMessageToUI('bot', text);
+                }
+            }
+
+            function addChatHistoryItem(name, sessionId) {
+                const chatHistoryList = document.getElementById('chat-history-list');
+                const allItems = chatHistoryList.querySelectorAll('li');
+                allItems.forEach(item => item.classList.remove('active'));
+                const li = document.createElement('li');
+                li.className = 'chat-history-item active';
+                li.textContent = name;
+                li.dataset.sessionId = sessionId;
+                li.addEventListener('click', () => loadConversation(sessionId, name));
+                chatHistoryList.prepend(li);
+            }
+            
+            // --- INITIALIZE APP ---
+            if (!token) {
+                window.location.href = '/login';
+            } else {
+                showInitialView();
+                loadHistory();
+                newChatBtn.addEventListener('click', showInitialView);
+            }
+        });
+    </script>
+</body>
+</html>

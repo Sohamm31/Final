@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+langchain
+langchain-community
+chromadb
+sentence-transformers
+pypdf
+youtube-transcript-api
+pytube
+mysql-connector-python
+python-dotenv

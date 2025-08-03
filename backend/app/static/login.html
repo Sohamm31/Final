@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - EngiConnect</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2F80ED;
+            --secondary-color: #56CCF2;
+            --dark-bg: #1a1a2e;
+            --light-text: #e0e0e0;
+            --card-bg: rgba(20, 20, 40, 0.85);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --error-color: #e74c3c;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            background: var(--dark-bg);
+            color: var(--light-text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .auth-container {
+            background: var(--card-bg);
+            padding: 3rem;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            width: 100%;
+            max-width: 400px;
+        }
+        .auth-container h1 {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            color: #fff;
+        }
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            opacity: 0.8;
+        }
+        .input-field {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: rgba(44, 46, 67, 0.5);
+            color: var(--light-text);
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        .auth-btn {
+            width: 100%;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(86, 204, 242, 0.3);
+        }
+        .toggle-link {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+        .toggle-link a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .error-message {
+            color: var(--error-color);
+            text-align: center;
+            margin-top: 1rem;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <!-- Login Form -->
+        <div id="login-form">
+            <h1>Login</h1>
+            <div class="input-group">
+                <label for="login-username">Username</label>
+                <input type="text" id="login-username" class="input-field" required>
+            </div>
+            <div class="input-group">
+                <label for="login-password">Password</label>
+                <input type="password" id="login-password" class="input-field" required>
+            </div>
+            <button id="login-button" class="auth-btn">Login</button>
+            <p class="toggle-link">Don't have an account? <a href="#" id="show-register">Register here</a></p>
+        </div>
+
+        <!-- Register Form (hidden by default) -->
+        <div id="register-form" style="display: none;">
+            <h1>Register</h1>
+            <div class="input-group">
+                <label for="register-username">Username</label>
+                <input type="text" id="register-username" class="input-field" required>
+            </div>
+            <div class="input-group">
+                <label for="register-password">Password</label>
+                <input type="password" id="register-password" class="input-field" required>
+            </div>
+            <button id="register-button" class="auth-btn">Register</button>
+            <p class="toggle-link">Already have an account? <a href="#" id="show-login">Login here</a></p>
+        </div>
+        <p id="error-message" class="error-message"></p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+            const showRegisterLink = document.getElementById('show-register');
+            const showLoginLink = document.getElementById('show-login');
+            const loginButton = document.getElementById('login-button');
+            const registerButton = document.getElementById('register-button');
+            const errorMessage = document.getElementById('error-message');
+
+            showRegisterLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                loginForm.style.display = 'none';
+                registerForm.style.display = 'block';
+                errorMessage.style.display = 'none';
+            });
+
+            showLoginLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                registerForm.style.display = 'none';
+                loginForm.style.display = 'block';
+                errorMessage.style.display = 'none';
+            });
+
+            registerButton.addEventListener('click', async () => {
+                const username = document.getElementById('register-username').value;
+                const password = document.getElementById('register-password').value;
+                errorMessage.style.display = 'none';
+
+                try {
+                    const response = await fetch('/api/v1/auth/register', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username, password })
+                    });
+                    if (!response.ok) {
+                        const err = await response.json();
+                        throw new Error(err.detail);
+                    }
+                    alert('Registration successful! Please login.');
+                    showLoginLink.click();
+                } catch (error) {
+                    errorMessage.textContent = error.message;
+                    errorMessage.style.display = 'block';
+                }
+            });
+
+            loginButton.addEventListener('click', async () => {
+                const username = document.getElementById('login-username').value;
+                const password = document.getElementById('login-password').value;
+                errorMessage.style.display = 'none';
+
+                const formData = new URLSearchParams();
+                formData.append('username', username);
+                formData.append('password', password);
+
+                try {
+                    const response = await fetch('/api/v1/auth/token', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: formData
+                    });
+                    if (!response.ok) {
+                        const err = await response.json();
+                        throw new Error(err.detail);
+                    }
+                    const data = await response.json();
+                    localStorage.setItem('accessToken', data.access_token);
+                    // *** FIX: Redirect to the main landing page ***
+                    window.location.href = '/'; 
+                } catch (error) {
+                    errorMessage.textContent = error.message;
+                    errorMessage.style.display = 'block';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
