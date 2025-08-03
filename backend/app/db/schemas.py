@@ -5,7 +5,6 @@ from typing import Optional, List
 from datetime import datetime
 
 # --- Authentication Schemas ---
-
 class UserCreate(BaseModel):
     username: str
     password: str
@@ -13,7 +12,6 @@ class UserCreate(BaseModel):
 class UserOut(BaseModel):
     id: int
     username: str
-
     class Config:
         orm_mode = True
 
@@ -24,9 +22,7 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     username: Optional[str] = None
 
-
 # --- Chatbot Schemas ---
-
 class ChatRequest(BaseModel):
     session_id: str
     message: str
@@ -43,18 +39,53 @@ class ProcessResponse(BaseModel):
     message: str
     filename: Optional[str] = None
 
-# --- ADDED FOR HISTORY ---
 class ChatSessionInfo(BaseModel):
     id: str
     source_name: str
+    source_type: str 
     created_at: datetime
-
     class Config:
         orm_mode = True
 
 class ChatMessageInfo(BaseModel):
     user_message: str
     ai_response: str
-
     class Config:
         orm_mode = True
+
+# --- ADDED: Session Update Schema ---
+class SessionUpdate(BaseModel):
+    new_name: str
+
+# --- Community Hub Schemas ---
+class AnswerBase(BaseModel):
+    body: str
+
+class AnswerCreate(AnswerBase):
+    pass
+
+class Answer(AnswerBase):
+    id: int
+    author: UserOut
+    created_at: datetime
+    class Config:
+        orm_mode = True
+
+class QuestionBase(BaseModel):
+    title: str
+    body: str
+
+class QuestionCreate(QuestionBase):
+    pass
+
+class Question(QuestionBase):
+    id: int
+    author: UserOut
+    created_at: datetime
+    answers: List[Answer] = []
+    class Config:
+        orm_mode = True
+
+# --- GitHub Analyzer Schemas ---
+class GitHubRepoRequest(BaseModel):
+    url: str

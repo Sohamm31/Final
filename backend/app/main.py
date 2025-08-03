@@ -13,7 +13,7 @@ from app.db import models
 from app.db.database import engine, test_db_connection
 
 # --- API Router Imports ---
-from app.api import chatbot, auth
+from app.api import chatbot, auth, community, github
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -46,29 +46,39 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],
+    # *** FIX: Explicitly list all allowed methods to solve the 405 error. ***
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["*"],
 )
 
 # 3. Include API Routers
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["Authentication"])
 app.include_router(chatbot.router, prefix="/api/v1/chatbot", tags=["Chatbot"])
+app.include_router(community.router, prefix="/api/v1/community", tags=["Community"])
+app.include_router(github.router, prefix="/api/v1/github", tags=["GitHub Analyzer"])
+
 
 # 4. Frontend Serving Endpoints
 @app.get("/", include_in_schema=False)
 async def serve_landing_page():
-    """Serves the main landing page (index.html)."""
     return FileResponse(os.path.join(static_files_path, "index.html"))
 
 @app.get("/chatbot", include_in_schema=False)
 async def serve_chatbot_page():
-    """Serves the chatbot application page."""
     return FileResponse(os.path.join(static_files_path, "chatbot.html"))
 
 @app.get("/login", include_in_schema=False)
 async def serve_login_page():
-    """Serves the login/signup page."""
     return FileResponse(os.path.join(static_files_path, "login.html"))
+
+@app.get("/community", include_in_schema=False)
+async def serve_community_page():
+    return FileResponse(os.path.join(static_files_path, "community.html"))
+
+@app.get("/github-analyzer", include_in_schema=False)
+async def serve_github_page():
+    # We will reuse the chatbot.html frontend for this feature
+    return FileResponse(os.path.join(static_files_path, "chatbot.html"))
 
 
 # 5. Running the Application

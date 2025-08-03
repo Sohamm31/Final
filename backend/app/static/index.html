@@ -257,10 +257,10 @@
     <button type="button" class="menu-toggle" aria-label="Menu">&#9776;</button>
     <ul id="nav-links">
       <li><a href="#mock-interview">🎤 Mock Interview</a></li>
-      <li><a href="#github-analyser">💻 Github Analyser</a></li>
-      <li><a href="#community-qa">💬 Q&A</a></li>
+      <!-- *** FIX: Changed href to /github-analyzer *** -->
+      <li><a href="/github-analyzer">💻 Github Analyser</a></li>
+      <li><a href="/community">💬 Q&A</a></li>
       <li><a href="/chatbot">🤖 Chatbot</a></li>
-      <!-- This will be dynamically replaced by JS -->
       <li id="auth-nav-link"><a href="/login" class="cta-button-nav">Login / Signup</a></li>
     </ul>
   </nav>
@@ -286,13 +286,14 @@
         <div class="icon">💻</div>
         <h3>Github Code Analyser</h3>
         <p>Chat with any public repository. Understand complex codebases, get explanations, and accelerate your learning.</p>
-        <a href="#" class="cta-button">Analyze Repo</a>
+        <!-- *** FIX: Changed href to /github-analyzer *** -->
+        <a href="/github-analyzer" class="cta-button">Analyze Repo</a>
       </div>
       <div class="feature-card" id="community-qa">
         <div class="icon">💬</div>
         <h3>Community Q&A</h3>
         <p>Ask, answer, and collaborate on challenging engineering problems with a community of peers and experts.</p>
-        <a href="#" class="cta-button">Join Now</a>
+        <a href="/community" class="cta-button">Join Now</a>
       </div>
       <div class="feature-card" id="chatbot">
         <div class="icon">🤖</div>
@@ -327,7 +328,7 @@
         });
     }
 
-    // *** DYNAMIC NAVBAR SCRIPT ***
+    // DYNAMIC NAVBAR SCRIPT
     document.addEventListener('DOMContentLoaded', async () => {
         const token = localStorage.getItem('accessToken');
         const authNavLink = document.getElementById('auth-nav-link');
@@ -340,19 +341,17 @@
 
                 if (response.ok) {
                     const user = await response.json();
-                    // Replace the login button with user info and logout button
                     authNavLink.innerHTML = `
-                        <span class="nav-text" style="margin-right: 1rem;">${user.username}</span>
+                        <span class="nav-text" style="margin-right: 1rem;">Hello, ${user.username}</span>
                         <button type="button" id="logout-button" class="logout-btn">Logout</button>
                     `;
                     
                     document.getElementById('logout-button').addEventListener('click', () => {
                         localStorage.removeItem('accessToken');
-                        window.location.reload(); // Reload the page to reset the state
+                        window.location.reload();
                     });
 
                 } else {
-                    // Token is invalid or expired, clear it
                     localStorage.removeItem('accessToken');
                 }
             } catch (error) {

@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Hub - EngiConnect</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2F80ED;
+            --secondary-color: #56CCF2;
+            --dark-bg: #1a1a2e;
+            --light-text: #e0e0e0;
+            --card-bg: rgba(40, 42, 60, 0.75);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --error-color: #e74c3c;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            background-color: var(--dark-bg);
+            color: var(--light-text);
+            line-height: 1.6;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(20, 20, 40, 0.75);
+            padding: 1rem 2.5rem;
+            position: sticky; top: 0; z-index: 100;
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .nav-logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: #fff;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            margin: 0;
+            color: #fff;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 0.7rem 1.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(86, 204, 242, 0.3);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--secondary-color);
+        }
+        
+        .btn-danger {
+            background: transparent;
+            border: 1px solid var(--error-color);
+            color: var(--error-color);
+            margin-left: 1rem;
+        }
+
+        /* Question List */
+        .question-list-item {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .question-list-item:hover {
+            transform: translateY(-4px);
+            background-color: rgba(45, 48, 70, 0.9);
+        }
+
+        .question-list-item h2 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.25rem;
+            color: var(--secondary-color);
+        }
+
+        .question-meta {
+            font-size: 0.85rem;
+            opacity: 0.7;
+        }
+
+        /* Question Detail View */
+        .question-body {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+        }
+
+        .answers-section h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .answer-card {
+            background: rgba(20, 20, 40, 0.85);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            border-left: 3px solid var(--primary-color);
+        }
+        
+        .answer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+        }
+
+        /* Form styling */
+        .form-card {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 12px;
+            margin-top: 1rem;
+        }
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        .input-field, .textarea-field {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: rgba(44, 46, 67, 0.5);
+            color: var(--light-text);
+            font-size: 1rem;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+        .textarea-field {
+            min-height: 120px;
+            resize: vertical;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="nav-logo">EngiConnect</a>
+    </nav>
+    <div class="container" id="main-container">
+        <!-- Content will be rendered here by JavaScript -->
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const API_BASE_URL = "/api/v1/community";
+            const AUTH_API_URL = "/api/v1/auth";
+            const token = localStorage.getItem('accessToken');
+            const mainContainer = document.getElementById('main-container');
+            let currentUser = null;
+
+            // --- API CALL HELPER ---
+            const apiCall = async (endpoint, method = 'GET', body = null) => {
+                const headers = {};
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+                const options = { method, headers };
+                if (body) {
+                    headers['Content-Type'] = 'application/json';
+                    options.body = JSON.stringify(body);
+                }
+                const response = await fetch(endpoint, options);
+                if (!response.ok) {
+                    // For DELETE 204 No Content, response.ok is true but response.json() will fail.
+                    if (response.status === 204) return null;
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || 'An API error occurred.');
+                }
+                // Handle 204 No Content for successful DELETE
+                return response.status === 204 ? null : response.json();
+            };
+            
+            // --- FETCH CURRENT USER ---
+            const fetchCurrentUser = async () => {
+                if (token) {
+                    try {
+                        currentUser = await apiCall(`${AUTH_API_URL}/users/me`);
+                    } catch (error) {
+                        console.error("Session expired or invalid:", error);
+                        localStorage.removeItem('accessToken');
+                        currentUser = null;
+                    }
+                }
+            };
+
+            // --- RENDER FUNCTIONS ---
+            const renderQuestionList = (questions) => {
+                mainContainer.innerHTML = `
+                    <div class="page-header">
+                        <h1>Community Q&A</h1>
+                        <button type="button" class="btn" id="ask-question-btn">Ask a Question</button>
+                    </div>
+                    <div id="question-list"></div>
+                `;
+
+                const questionList = document.getElementById('question-list');
+                if (questions.length === 0) {
+                    questionList.innerHTML = '<p>No questions have been asked yet. Be the first!</p>';
+                } else {
+                    questions.forEach(q => {
+                        const questionItem = document.createElement('div');
+                        questionItem.className = 'question-list-item';
+                        questionItem.innerHTML = `
+                            <h2>${q.title}</h2>
+                            <p class="question-meta">Asked by ${q.author.username} on ${new Date(q.created_at).toLocaleDateString()}</p>
+                        `;
+                        questionItem.addEventListener('click', () => renderQuestionDetail(q.id));
+                        questionList.appendChild(questionItem);
+                    });
+                }
+                
+                document.getElementById('ask-question-btn').addEventListener('click', renderAskQuestionForm);
+            };
+
+            const renderQuestionDetail = async (questionId) => {
+                try {
+                    const q = await apiCall(`${API_BASE_URL}/questions/${questionId}`);
+                    let deleteButtonHTML = '';
+                    if (currentUser && currentUser.id === q.author.id) {
+                        deleteButtonHTML = `<button type="button" class="btn btn-danger" id="delete-question-btn">Delete Question</button>`;
+                    }
+
+                    mainContainer.innerHTML = `
+                        <div class="page-header">
+                            <button type="button" class="btn btn-secondary" id="back-to-questions-btn">← Back to All Questions</button>
+                            ${deleteButtonHTML}
+                        </div>
+                        <div class="question-body">
+                            <h1>${q.title}</h1>
+                            <p class="question-meta">Asked by ${q.author.username} on ${new Date(q.created_at).toLocaleDateString()}</p>
+                            <p style="margin-top: 1.5rem;">${q.body.replace(/\n/g, '<br>')}</p>
+                        </div>
+                        <div class="answers-section">
+                            <h3>${q.answers.length} Answers</h3>
+                            <div id="answers-list"></div>
+                        </div>
+                        <div id="answer-form-container"></div>
+                    `;
+
+                    const answersList = document.getElementById('answers-list');
+                    if (q.answers.length > 0) {
+                        q.answers.forEach(ans => {
+                            let deleteAnswerBtn = '';
+                            if(currentUser && currentUser.id === ans.author.id) {
+                                deleteAnswerBtn = `<button type="button" class="btn btn-danger" style="padding: 0.2rem 0.6rem; font-size: 0.8rem;" data-answer-id="${ans.id}">Delete</button>`;
+                            }
+                            const answerItem = document.createElement('div');
+                            answerItem.className = 'answer-card';
+                            answerItem.innerHTML = `
+                                <p>${ans.body.replace(/\n/g, '<br>')}</p>
+                                <div class="answer-header">
+                                    <p class="question-meta">Answered by ${ans.author.username} on ${new Date(ans.created_at).toLocaleDateString()}</p>
+                                    ${deleteAnswerBtn}
+                                </div>
+                            `;
+                            answersList.appendChild(answerItem);
+                        });
+                    } else {
+                        answersList.innerHTML = '<p>No answers yet. Be the first to help!</p>';
+                    }
+
+                    if (token) {
+                        renderAnswerForm(questionId);
+                    }
+
+                    document.getElementById('back-to-questions-btn').addEventListener('click', loadInitialView);
+                    if (deleteButtonHTML) {
+                        document.getElementById('delete-question-btn').addEventListener('click', () => handleDeleteQuestion(questionId));
+                    }
+                    document.querySelectorAll('[data-answer-id]').forEach(button => {
+                        button.addEventListener('click', (e) => handleDeleteAnswer(e.target.dataset.answerId, questionId));
+                    });
+
+                } catch (error) {
+                    mainContainer.innerHTML = `<p class="error-message">${error.message}</p>`;
+                }
+            };
+
+            const renderAskQuestionForm = () => {
+                if (!token) {
+                    window.location.href = '/login';
+                    return;
+                }
+                mainContainer.innerHTML = `
+                    <div class="page-header">
+                        <h1>Ask a New Question</h1>
+                        <button type="button" class="btn btn-secondary" id="cancel-ask-btn">Cancel</button>
+                    </div>
+                    <div class="form-card">
+                        <div class="input-group">
+                            <label for="question-title">Title</label>
+                            <input type="text" id="question-title" class="input-field" placeholder="e.g., How to handle CORS errors in FastAPI?">
+                        </div>
+                        <div class="input-group">
+                            <label for="question-body">Body</label>
+                            <textarea id="question-body" class="textarea-field" placeholder="Describe your problem in detail..."></textarea>
+                        </div>
+                        <button type="button" id="submit-question-btn" class="btn">Submit Question</button>
+                    </div>
+                `;
+                document.getElementById('submit-question-btn').addEventListener('click', postQuestion);
+                document.getElementById('cancel-ask-btn').addEventListener('click', loadInitialView);
+            };
+
+            const renderAnswerForm = (questionId) => {
+                const container = document.getElementById('answer-form-container');
+                container.innerHTML = `
+                    <div class="form-card">
+                        <h3>Your Answer</h3>
+                        <div class="input-group">
+                            <textarea id="answer-body" class="textarea-field" placeholder="Type your answer here..."></textarea>
+                        </div>
+                        <button type="button" id="submit-answer-btn" class="btn">Post Answer</button>
+                    </div>
+                `;
+                document.getElementById('submit-answer-btn').addEventListener('click', () => postAnswer(questionId));
+            };
+
+            // --- DATA LOGIC ---
+            const postQuestion = async () => {
+                const title = document.getElementById('question-title').value;
+                const body = document.getElementById('question-body').value;
+                if (!title || !body) {
+                    alert('Please fill out both title and body.');
+                    return;
+                }
+                try {
+                    await apiCall(`${API_BASE_URL}/questions`, 'POST', { title, body });
+                    loadInitialView();
+                } catch (error) {
+                    alert(`Error posting question: ${error.message}`);
+                }
+            };
+            
+            const postAnswer = async (questionId) => {
+                const body = document.getElementById('answer-body').value;
+                if (!body) {
+                    alert('Please write an answer.');
+                    return;
+                }
+                try {
+                    await apiCall(`${API_BASE_URL}/questions/${questionId}/answers`, 'POST', { body });
+                    renderQuestionDetail(questionId); // Re-render the detail view to show the new answer
+                } catch (error) {
+                    alert(`Error posting answer: ${error.message}`);
+                }
+            };
+
+            const handleDeleteQuestion = async (questionId) => {
+                if (confirm('Are you sure you want to delete this question? This cannot be undone.')) {
+                    try {
+                        await apiCall(`${API_BASE_URL}/questions/${questionId}`, 'DELETE');
+                        loadInitialView();
+                    } catch (error) {
+                        alert(`Error deleting question: ${error.message}`);
+                    }
+                }
+            };
+
+            const handleDeleteAnswer = async (answerId, questionId) => {
+                 if (confirm('Are you sure you want to delete this answer?')) {
+                    try {
+                        await apiCall(`${API_BASE_URL}/answers/${answerId}`, 'DELETE');
+                        renderQuestionDetail(questionId); // Refresh the page to show the answer is gone
+                    } catch (error) {
+                        alert(`Error deleting answer: ${error.message}`);
+                    }
+                }
+            };
+
+            const loadInitialView = async () => {
+                try {
+                    const questions = await apiCall(`${API_BASE_URL}/questions`);
+                    renderQuestionList(questions);
+                } catch (error) {
+                    mainContainer.innerHTML = `<p class="error-message">${error.message}</p>`;
+                }
+            };
+
+            // --- INITIALIZE APP ---
+            (async () => {
+                await fetchCurrentUser();
+                loadInitialView();
+            })();
+        });
+    </script>
+</body>
+</html>
