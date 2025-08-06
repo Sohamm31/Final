@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Mock Interview - EngiConnect</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --primary-color: #2F80ED;
+      --secondary-color: #56CCF2;
+      --accent-color: #6366f1;
+      --dark-bg: #0f0f23;
+      --darker-bg: #0a0a1a;
+      --card-bg: rgba(30, 31, 54, 0.9);
+      --card-border: rgba(86, 204, 242, 0.15);
+      --light-text: #f1f5f9;
+      --muted-text: #94a3b8;
+      --success-color: #10b981;
+      --error-color: #ef4444;
+      --warning-color: #f59e0b;
+      --border-radius: 1.5rem;
+      --shadow-light: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --shadow-medium: 0 10px 25px -3px rgba(0, 0, 0, 0.1);
+      --shadow-heavy: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      --gradient-primary: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+      --gradient-accent: linear-gradient(135deg, var(--accent-color) 0%, #8b5cf6 100%);
+      --gradient-bg: linear-gradient(135deg, var(--dark-bg) 0%, var(--darker-bg) 100%);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--gradient-bg);
+      color: var(--light-text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 1rem;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 80%, rgba(47, 128, 237, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(86, 204, 242, 0.15) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    #app {
+      width: 100%;
+      max-width: 1000px;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      position: relative;
+    }
+
+    .screen-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: var(--border-radius);
+      padding: 2.5rem;
+      border: 1px solid var(--card-border);
+      box-shadow: var(--shadow-heavy);
+      display: none;
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .screen-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: var(--gradient-primary);
+      opacity: 0.6;
+    }
+
+    .screen-card.active {
+      display: block;
+      animation: fadeInScale 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes fadeInScale {
+      from {
+        opacity: 0;
+        transform: scale(0.95) translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    h1, h2, h3 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.75rem;
+    }
+
+    h2 {
+      font-size: 2rem;
+      color: var(--light-text);
+    }
+
+    h3 {
+      font-size: 1.5rem;
+      color: var(--light-text);
+    }
+
+    .subtitle {
+      font-size: 1.125rem;
+      color: var(--muted-text);
+      text-align: center;
+      margin-bottom: 2.5rem;
+      font-weight: 400;
+    }
+
+    .btn-primary, .btn-secondary {
+      padding: 1rem 2rem;
+      border-radius: 1rem;
+      font-weight: 600;
+      font-size: 1.125rem;
+      cursor: pointer;
+      text-align: center;
+      width: 100%;
+      max-width: 320px;
+      margin: 0.75rem auto;
+      display: block;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      text-decoration: none;
+      border: none;
+    }
+
+    .btn-primary {
+      background: var(--gradient-primary);
+      color: white;
+      box-shadow: var(--shadow-medium);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 20px 40px -12px rgba(47, 128, 237, 0.4);
+    }
+
+    .btn-secondary {
+      background: rgba(86, 204, 242, 0.1);
+      border: 2px solid var(--secondary-color);
+      color: var(--secondary-color);
+      backdrop-filter: blur(10px);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(86, 204, 242, 0.2);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-medium);
+    }
+
+    .btn-primary:active, .btn-secondary:active {
+      transform: translateY(0);
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 1rem 1.25rem;
+      border-radius: 1rem;
+      border: 2px solid var(--card-border);
+      background: rgba(30, 31, 54, 0.6);
+      color: var(--light-text);
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .input-field:focus {
+      outline: none;
+      border-color: var(--secondary-color);
+      box-shadow: 0 0 0 4px rgba(86, 204, 242, 0.1);
+    }
+
+    .input-field::file-selector-button {
+      background: var(--gradient-primary);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      margin-right: 1rem;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .chat-box {
+      height: 400px;
+      overflow-y: auto;
+      border: 2px solid var(--card-border);
+      border-radius: var(--border-radius);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      background: rgba(15, 15, 35, 0.8);
+      backdrop-filter: blur(10px);
+      gap: 1rem;
+    }
+
+    .chat-box::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .chat-box::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+    }
+
+    .chat-box::-webkit-scrollbar-thumb {
+      background: var(--gradient-primary);
+      border-radius: 3px;
+    }
+
+    .chat-bubble {
+      padding: 1.25rem 1.5rem;
+      border-radius: 1.5rem;
+      margin-bottom: 0.5rem;
+      max-width: 85%;
+      font-size: 1rem;
+      line-height: 1.6;
+      position: relative;
+      animation: messageSlide 0.3s ease-out;
+    }
+
+    @keyframes messageSlide {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .ai-bubble {
+      align-self: flex-start;
+      background: var(--gradient-primary);
+      color: white;
+      border-bottom-left-radius: 0.5rem;
+    }
+
+    .user-bubble {
+      align-self: flex-end;
+      background: var(--gradient-accent);
+      color: white;
+      border-bottom-right-radius: 0.5rem;
+    }
+
+    .mic-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    #mic-button {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: none;
+      background: var(--gradient-primary);
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: var(--shadow-medium);
+      position: relative;
+    }
+
+    #mic-button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 20px 40px -12px rgba(47, 128, 237, 0.5);
+    }
+
+    #mic-button:active {
+      transform: scale(0.95);
+    }
+
+    #mic-button.listening {
+      background: var(--gradient-accent);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7);
+      }
+      50% {
+        box-shadow: 0 0 0 20px rgba(99, 102, 241, 0);
+      }
+    }
+
+    #listening-status {
+      font-size: 0.875rem;
+      color: var(--muted-text);
+      text-align: center;
+      min-height: 1.25rem;
+      font-weight: 500;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(8px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-content {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      border-radius: var(--border-radius);
+      padding: 2.5rem;
+      text-align: center;
+      width: 90%;
+      max-width: 450px;
+      border: 1px solid var(--card-border);
+      box-shadow: var(--shadow-heavy);
+      animation: modalSlide 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes modalSlide {
+      from {
+        opacity: 0;
+        transform: scale(0.9) translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .loader {
+      border: 4px solid rgba(86, 204, 242, 0.2);
+      border-top: 4px solid var(--secondary-color);
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin: 1.5rem auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .feedback-section {
+      background: rgba(30, 31, 54, 0.6);
+      border-radius: 1rem;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(10px);
+    }
+
+    .feedback-section h3 {
+      color: var(--secondary-color);
+      margin-bottom: 1rem;
+      text-align: left;
+    }
+
+    .feedback-section h4 {
+      color: var(--light-text);
+      margin-bottom: 0.75rem;
+      font-weight: 600;
+    }
+
+    .feedback-section ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .feedback-section li {
+      background: rgba(86, 204, 242, 0.1);
+      margin-bottom: 0.5rem;
+      padding: 0.75rem 1rem;
+      border-radius: 0.75rem;
+      border-left: 3px solid var(--secondary-color);
+    }
+
+    .rating-display {
+      font-size: 2rem;
+      font-weight: 800;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: inline-block;
+    }
+
+    .history-item {
+      background: rgba(30, 31, 54, 0.6);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+    }
+
+    .history-item:hover {
+      border-color: var(--secondary-color);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-medium);
+    }
+
+    .history-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .history-item-header h3 {
+      color: var(--light-text);
+      margin: 0;
+      text-align: left;
+    }
+
+    .history-item-body {
+      display: none;
+      padding-top: 1rem;
+      border-top: 1px solid var(--card-border);
+    }
+
+    .history-item-body.expanded {
+      display: block;
+      animation: slideDown 0.3s ease-out;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        max-height: 0;
+      }
+      to {
+        opacity: 1;
+        max-height: 200px;
+      }
+    }
+
+    .toggle-history-details {
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+      min-width: auto;
+      max-width: auto;
+      margin: 0;
+    }
+
+    .space-y-4 > * + * { 
+      margin-top: 1.5rem; 
+    }
+
+    .text-center { 
+      text-align: center; 
+    }
+
+    /* New styles for in-screen loading indicators */
+    .loading-indicator {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      padding: 1rem;
+      background: rgba(30, 31, 54, 0.6);
+      border-radius: 1rem;
+      margin: 1rem 0;
+      border: 1px solid var(--card-border);
+    }
+
+    .loading-indicator .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--secondary-color);
+      animation: bounce 1.4s infinite ease-in-out;
+    }
+
+    .loading-indicator .dot:nth-child(1) {
+      animation-delay: -0.32s;
+    }
+
+    .loading-indicator .dot:nth-child(2) {
+      animation-delay: -0.16s;
+    }
+
+    @keyframes bounce {
+      0%, 80%, 100% { 
+        transform: translateY(0);
+      }
+      40% {
+        transform: translateY(-10px);
+      }
+    }
+
+    .transcription-container {
+      width: 100%;
+      padding: 1rem;
+      background: rgba(30, 31, 54, 0.6);
+      border-radius: 1rem;
+      margin-bottom: 1rem;
+      border: 1px solid var(--card-border);
+      min-height: 60px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      body {
+        padding: 0.5rem;
+      }
+
+      .screen-card {
+        padding: 1.5rem;
+        margin: 0.5rem;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      h2 {
+        font-size: 1.5rem;
+      }
+
+      .btn-primary, .btn-secondary {
+        max-width: 100%;
+        padding: 0.875rem 1.5rem;
+        font-size: 1rem;
+      }
+
+      .chat-box {
+        height: 300px;
+        padding: 1rem;
+      }
+
+      #mic-button {
+        width: 70px;
+        height: 70px;
+      }
+
+      .modal-content {
+        padding: 2rem;
+        margin: 1rem;
+      }
+
+      .history-item-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+      }
+
+      .toggle-history-details {
+        align-self: center;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .screen-card {
+        padding: 1rem;
+      }
+
+      h1 {
+        font-size: 1.75rem;
+      }
+
+      .feedback-section {
+        padding: 1.5rem;
+      }
+
+      .chat-bubble {
+        max-width: 95%;
+        padding: 1rem 1.25rem;
+      }
+    }
+
+    /* Enhanced focus states for accessibility */
+    .btn-primary:focus,
+    .btn-secondary:focus,
+    #mic-button:focus {
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(86, 204, 242, 0.3);
+    }
+
+    /* Loading states */
+    .btn-primary:disabled,
+    .btn-secondary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-primary:disabled:hover,
+    .btn-secondary:disabled:hover {
+      transform: none;
+      box-shadow: var(--shadow-medium);
+    }
+  </style>
+</head>
+<body>
+
+    <div id="app" class="w-full">
+        <!-- Main Menu Screen -->
+        <div id="main-menu-screen" class="screen-card max-w-lg mx-auto" style="display: none;">
+            <h1>Mock Interview System</h1>
+            <p class="subtitle">Prepare for your next interview with AI-powered practice sessions</p>
+            <div class="space-y-4 flex flex-col items-center">
+                <button id="start-new-interview-button" class="btn-primary">Start New Interview</button>
+                <button id="view-history-button" class="btn-secondary">View Interview History</button>
+                <button id="back-to-home-button" class="btn-secondary">Back to Home</button>
+            </div>
+        </div>
+
+        <!-- Resume Upload Screen -->
+        <div id="upload-screen" class="screen-card max-w-lg mx-auto" style="display: none;">
+            <h2>Upload Your Resume</h2>
+            <p class="subtitle">Upload your resume to get personalized interview questions</p>
+            <div class="mb-4">
+                <label for="resume-file-input" class="block text-gray-300 text-sm font-bold mb-2">Select Resume (PDF, DOCX):</label>
+                <input type="file" id="resume-file-input" accept=".pdf,.docx" class="input-field cursor-pointer">
+            </div>
+            <button id="upload-resume-button" class="btn-primary w-full">Upload & Prepare Interview</button>
+        </div>
+
+        <!-- Interview Screen -->
+        <div id="interview-screen" class="screen-card" style="display: none;">
+            <h2>Mock Interview Session</h2>
+            <div id="chat-box" class="chat-box"></div>
+            <div id="transcription-container" class="transcription-container" style="display: none;"></div>
+            <div id="loading-indicator" class="loading-indicator" style="display: none;">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <span id="loading-text">Generating your first question...</span>
+            </div>
+            <div class="mic-container">
+                <button id="mic-button" title="Start/Stop Speaking">
+                    <svg id="mic-icon" xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                    <svg id="stop-mic-icon" xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-300 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" /></svg>
+                </button>
+                <p id="listening-status"></p>
+                <button id="exit-interview-button" class="btn-secondary mt-4">Exit Interview</button>
+            </div>
+        </div>
+        
+        <!-- Feedback Screen -->
+        <div id="feedback-screen" class="screen-card" style="display: none;">
+            <h2>Interview Feedback</h2>
+            <div id="technical-feedback" class="feedback-section">
+                <h3>Technical Knowledge</h3>
+                <p class="text-lg mb-3">Rating: <span id="tech-rating" class="rating-display"></span>/5</p>
+                <h4>Tips for Improvement:</h4>
+                <ul id="tech-tips"></ul>
+            </div>
+            <div id="hr-feedback" class="feedback-section">
+                <h3>Communication Skills</h3>
+                <p class="text-lg mb-3">Rating: <span id="hr-rating" class="rating-display"></span>/5</p>
+                <h4>Tips for Improvement:</h4>
+                <ul id="hr-tips"></ul>
+            </div>
+            <div class="text-center mt-8">
+                <button id="finish-interview-button" class="btn-primary">Back to Main Menu</button>
+            </div>
+        </div>
+
+        <!-- History Screen -->
+        <div id="history-screen" class="screen-card" style="display: none;">
+            <h2>Interview History</h2>
+            <p class="subtitle">Review your past interview sessions and track your progress</p>
+            <div id="history-list" class="space-y-4 max-h-[60vh] overflow-y-auto p-2"></div>
+            <div class="text-center mt-8">
+                <button id="back-to-main-menu-from-history" class="btn-secondary">Back to Main Menu</button>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="modal-overlay" class="modal-overlay">
+        <div class="modal-content">
+          <div id="modal-loader" class="loader" style="display: none;"></div>
+          <p id="modal-message" class="text-lg font-medium"></p>
+          <div class="text-center mt-4">
+            <button id="modal-ok-button" class="btn-primary" style="display: none;">OK</button>
+          </div>
+        </div>
+      </div>
+
+    <script>
+        const API_BASE_URL = "/api/v1/interview";
+        const token = localStorage.getItem('accessToken');
+        let currentInterviewSessionId = null;
+        let recognition;
+        let synth = window.speechSynthesis;
+        let isListening = false;
+        let fullscreenWarnings = 0;
+    
+        // DOM Elements
+        const mainMenuScreen = document.getElementById('main-menu-screen');
+        const uploadScreen = document.getElementById('upload-screen');
+        const interviewScreen = document.getElementById('interview-screen');
+        const feedbackScreen = document.getElementById('feedback-screen');
+        const historyScreen = document.getElementById('history-screen');
+        const startNewInterviewButton = document.getElementById('start-new-interview-button');
+        const uploadResumeButton = document.getElementById('upload-resume-button');
+        const resumeFileInput = document.getElementById('resume-file-input');
+        const chatBox = document.getElementById('chat-box');
+        const micButton = document.getElementById('mic-button');
+        const micIcon = document.getElementById('mic-icon');
+        const stopMicIcon = document.getElementById('stop-mic-icon');
+        const listeningStatus = document.getElementById('listening-status');
+        const modalOverlay = document.getElementById('modal-overlay');
+        const modalLoader = document.getElementById('modal-loader');
+        const modalMessage = document.getElementById('modal-message');
+        const modalOkButton = document.getElementById('modal-ok-button');
+        const backToHomeButton = document.getElementById('back-to-home-button');
+        const finishInterviewButton = document.getElementById('finish-interview-button');
+        const viewHistoryButton = document.getElementById('view-history-button');
+        const backToMainMenuFromHistoryButton = document.getElementById('back-to-main-menu-from-history');
+        const historyList = document.getElementById('history-list');
+        const exitInterviewButton = document.getElementById('exit-interview-button');
+        const loadingIndicator = document.getElementById('loading-indicator');
+        const loadingText = document.getElementById('loading-text');
+        const transcriptionContainer = document.getElementById('transcription-container');
+    
+        // Utility Functions
+        function showScreen(screen) {
+            [mainMenuScreen, uploadScreen, interviewScreen, feedbackScreen, historyScreen].forEach(s => s.style.display = 'none');
+            screen.style.display = 'block';
+            screen.classList.add('active');
+        }
+        
+        function showModal(message, showLoader = false) {
+            modalMessage.textContent = message;
+            modalLoader.style.display = showLoader ? 'block' : 'none';
+            modalOverlay.style.display = 'flex';
+        }
+        
+        function hideModal() {
+            modalOverlay.style.display = 'none';
+        }
+        
+        function appendMessage(role, text) {
+            const bubble = document.createElement('div');
+            bubble.className = `chat-bubble ${role === 'ai' ? 'ai-bubble' : 'user-bubble'}`;
+            bubble.textContent = text;
+            chatBox.appendChild(bubble);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+        
+        function showLoadingIndicator(text) {
+            loadingText.textContent = text;
+            loadingIndicator.style.display = 'flex';
+        }
+        
+        function hideLoadingIndicator() {
+            loadingIndicator.style.display = 'none';
+        }
+        
+        function showTranscription(text) {
+            transcriptionContainer.textContent = text;
+            transcriptionContainer.style.display = 'block';
+        }
+        
+        function hideTranscription() {
+            transcriptionContainer.style.display = 'none';
+        }
+    
+        function requestFullscreen() {
+            const elem = document.documentElement;
+            if (elem.requestFullscreen) return elem.requestFullscreen();
+            return Promise.reject("Fullscreen not supported");
+        }
+        
+        function exitFullscreen() {
+            if (document.exitFullscreen) document.exitFullscreen();
+        }
+    
+        function handleFullscreenChange() {
+            const isFullscreen = !!document.fullscreenElement;
+            if (!isFullscreen && interviewScreen.style.display === 'block') {
+                fullscreenWarnings++;
+                if (fullscreenWarnings >= 4) {
+                    showModal("Interview terminated due to multiple attempts to exit fullscreen.");
+                    setTimeout(endInterviewAbruptly, 3000);
+                } else {
+                    const remaining = 4 - fullscreenWarnings;
+                    showModal(`Exiting fullscreen is not allowed. Please re-enter. You have ${remaining} warning(s) left.`);
+                    modalOkButton.style.display = 'block';
+                    modalOkButton.onclick = () => {
+                        modalOkButton.style.display = 'none';
+                        hideModal();
+                        requestFullscreen().catch(err => {
+                            alert("Fullscreen permission denied. Please allow it to continue.");
+                            console.error("Fullscreen error:", err);
+                        });
+                    };
+                }
+            }
+        }
+        
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        document.addEventListener('fullscreenerror', () => {
+            alert("Failed to enter fullscreen. Please check your browser settings.");
+        });
+    
+        function setupSpeech() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                alert("Voice recognition is not supported by your browser.");
+                return;
+            }
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = true;
+            
+            recognition.onstart = () => {
+                isListening = true;
+                micButton.classList.add('listening');
+                micIcon.classList.add('hidden');
+                stopMicIcon.classList.remove('hidden');
+                listeningStatus.textContent = "Listening...";
+                showTranscription("");
+            };
+            
+            recognition.onresult = (event) => {
+                const transcript = Array.from(event.results)
+                    .map(result => result[0])
+                    .map(result => result.transcript)
+                    .join('');
+                showTranscription(transcript);
+                
+                if (event.results[0].isFinal) {
+                    const finalTranscript = event.results[0][0].transcript;
+                    appendMessage('user', finalTranscript);
+                    hideTranscription();
+                    sendAnswer(finalTranscript);
+                }
+            };
+            
+            recognition.onend = () => {
+                isListening = false;
+                micButton.classList.remove('listening');
+                micIcon.classList.remove('hidden');
+                stopMicIcon.classList.add('hidden');
+                listeningStatus.textContent = "";
+            };
+            
+            recognition.onerror = (event) => {
+                console.error("Speech recognition error", event);
+                listeningStatus.textContent = `Mic Error: ${event.error}. Please try again.`;
+                hideTranscription();
+            };
+        }
+    
+        function speakText(text) {
+            if (!synth) return;
+            synth.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.onend = () => {
+                if (interviewScreen.style.display === 'block') {
+                    micButton.disabled = false;
+                    try {
+                        recognition.start();
+                    } catch (e) {
+                        console.error("Could not start recognition after speech:", e);
+                    }
+                }
+            };
+            micButton.disabled = true;
+            synth.speak(utterance);
+        }
+    
+        const apiCall = async (endpoint, method = 'POST', body) => {
+            const headers = { 'Authorization': `Bearer ${token}` };
+            const options = { method, headers };
+            if (body) options.body = body;
+            const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
+            if (!response.ok) {
+                const err = await response.json();
+                throw new Error(err.detail);
+            }
+            return response.json();
+        };
+    
+        startNewInterviewButton.addEventListener('click', () => showScreen(uploadScreen));
+        backToHomeButton.addEventListener('click', () => window.location.href = '/');
+        finishInterviewButton.addEventListener('click', () => {
+            exitFullscreen();
+            showScreen(mainMenuScreen);
+        });
+        backToMainMenuFromHistoryButton.addEventListener('click', () => showScreen(mainMenuScreen));
+    
+        uploadResumeButton.addEventListener('click', async () => {
+            const file = resumeFileInput.files[0];
+            if (!file) return alert('Please select a resume file.');
+            
+            showModal("The interview will now enter fullscreen mode. Switching tabs or exiting is not allowed.", false);
+            modalOkButton.style.display = 'block';
+            modalOkButton.onclick = async () => {
+                modalOkButton.style.display = 'none';
+                hideModal();
+                
+                const formData = new FormData();
+                formData.append('resume_file', file);
+                try {
+                    showLoadingIndicator("Processing your resume...");
+                    const data = await apiCall('/upload_resume', 'POST', formData);
+                    currentInterviewSessionId = data.interview_session_id;
+                    
+                    requestFullscreen().then(() => {
+                        startInterview();
+                    }).catch(err => {
+                        console.error("Fullscreen request failed:", err);
+                        alert("Could not enter fullscreen. Please allow fullscreen mode.");
+                        startInterview(); // Optional fallback
+                    });
+                } catch (error) {
+                    hideLoadingIndicator();
+                    alert(`Error: ${error.message}`);
+                }
+            };
+        });
+    
+        const startInterview = async () => {
+            showLoadingIndicator("Generating your first question...");
+            const formData = new FormData();
+            formData.append('interview_session_id', currentInterviewSessionId);
+            try {
+                const data = await apiCall('/start_interview', 'POST', formData);
+                hideLoadingIndicator();
+                showScreen(interviewScreen);
+                fullscreenWarnings = 0;
+                chatBox.innerHTML = '';
+                appendMessage('ai', data.question);
+                speakText(data.question);
+            } catch (error) {
+                hideLoadingIndicator();
+                alert(`Error: ${error.message}`);
+            }
+        };
+    
+        const sendAnswer = async (answer) => {
+            showLoadingIndicator("Thinking...");
+            const formData = new FormData();
+            formData.append('interview_session_id', currentInterviewSessionId);
+            formData.append('user_answer', answer);
+            try {
+                const data = await apiCall('/submit_answer', 'POST', formData);
+                hideLoadingIndicator();
+                if (data.status === 'interview_finished') {
+                    getFeedback();
+                } else {
+                    appendMessage('ai', data.question);
+                    speakText(data.question);
+                }
+            } catch (error) {
+                hideLoadingIndicator();
+                alert(`Error: ${error.message}`);
+            }
+        };
+    
+        const getFeedback = async () => {
+            showLoadingIndicator("Interview complete! Generating feedback...");
+            const formData = new FormData();
+            formData.append('interview_session_id', currentInterviewSessionId);
+            try {
+                const data = await apiCall('/get_feedback', 'POST', formData);
+                hideLoadingIndicator();
+                document.getElementById('tech-rating').textContent = data.technical_feedback.technical_knowledge_rating;
+                const techTipsList = document.getElementById('tech-tips');
+                techTipsList.innerHTML = '';
+                data.technical_feedback.technical_tips.forEach(tip => {
+                    const li = document.createElement('li');
+                    li.textContent = tip;
+                    techTipsList.appendChild(li);
+                });
+                document.getElementById('hr-rating').textContent = data.hr_feedback.communication_skills_rating;
+                const hrTipsList = document.getElementById('hr-tips');
+                hrTipsList.innerHTML = '';
+                data.hr_feedback.communication_tips.forEach(tip => {
+                    const li = document.createElement('li');
+                    li.textContent = tip;
+                    hrTipsList.appendChild(li);
+                });
+                exitFullscreen();
+                showScreen(feedbackScreen);
+            } catch (error) {
+                hideLoadingIndicator();
+                alert(`Error: ${error.message}`);
+            }
+        };
+    
+        viewHistoryButton.addEventListener('click', async () => {
+            showModal('Loading history...', true);
+            try {
+                const history = await apiCall('/history', 'GET');
+                historyList.innerHTML = '';
+                if (history.length === 0) {
+                    historyList.innerHTML = '<p>No history found.</p>';
+                } else {
+                    history.forEach(session => {
+                        const item = document.createElement('div');
+                        item.className = 'history-item';
+                        item.innerHTML = `
+                            <div class="history-item-header">
+                                <h3>Interview on ${new Date(session.start_time).toLocaleString()}</h3>
+                                <button class="btn-secondary toggle-history-details px-3 py-1 text-sm">View Details</button>
+                            </div>
+                            <div class="history-item-body">
+                                <h4>Technical Feedback: ${session.technical_feedback?.rating || 'N/A'}/5</h4>
+                                <ul>${(session.technical_feedback?.tips || []).map(tip => `<li>${tip}</li>`).join('')}</ul>
+                                <h4 class="mt-2">HR Feedback: ${session.hr_feedback?.rating || 'N/A'}/5</h4>
+                                <ul>${(session.hr_feedback?.tips || []).map(tip => `<li>${tip}</li>`).join('')}</ul>
+                            </div>
+                        `;
+                        historyList.appendChild(item);
+                    });
+                    document.querySelectorAll('.toggle-history-details').forEach(button => {
+                        button.addEventListener('click', e => {
+                            const body = e.target.closest('.history-item').querySelector('.history-item-body');
+                            body.classList.toggle('expanded');
+                        });
+                    });
+                }
+                hideModal();
+                showScreen(historyScreen);
+            } catch (error) {
+                hideModal();
+                alert(`Error: ${error.message}`);
+            }
+        });
+    
+        const endInterviewAbruptly = () => {
+            exitFullscreen();
+            showScreen(mainMenuScreen);
+            currentInterviewSessionId = null;
+        };
+    
+        exitInterviewButton.addEventListener('click', () => {
+            if (confirm("Are you sure you want to end the interview?")) {
+                endInterviewAbruptly();
+            }
+        });
+    
+        micButton.addEventListener('click', () => {
+            if (!recognition) setupSpeech();
+            if (isListening) {
+                recognition.stop();
+            } else {
+                try {
+                    recognition.start();
+                } catch (e) {
+                    console.error("Could not start recognition:", e);
+                    listeningStatus.textContent = "Could not start mic. Please check permissions.";
+                }
+            }
+        });
+    
+        if (!token) {
+            window.location.href = '/login';
+        } else {
+            setupSpeech();
+            showScreen(mainMenuScreen);
+        }
+    </script>
+</body>
+</html>

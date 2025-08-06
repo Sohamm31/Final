@@ -13,7 +13,7 @@ from app.db import models
 from app.db.database import engine, test_db_connection
 
 # --- API Router Imports ---
-from app.api import chatbot, auth, community, github
+from app.api import chatbot, auth, community, github, interview
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -46,8 +46,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    # *** FIX: Explicitly list all allowed methods to solve the 405 error. ***
-    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 
@@ -56,6 +55,7 @@ app.include_router(auth.router, prefix="/api/v1/auth", tags=["Authentication"])
 app.include_router(chatbot.router, prefix="/api/v1/chatbot", tags=["Chatbot"])
 app.include_router(community.router, prefix="/api/v1/community", tags=["Community"])
 app.include_router(github.router, prefix="/api/v1/github", tags=["GitHub Analyzer"])
+app.include_router(interview.router, prefix="/api/v1/interview", tags=["Mock Interview"])
 
 
 # 4. Frontend Serving Endpoints
@@ -77,8 +77,11 @@ async def serve_community_page():
 
 @app.get("/github-analyzer", include_in_schema=False)
 async def serve_github_page():
-    # We will reuse the chatbot.html frontend for this feature
     return FileResponse(os.path.join(static_files_path, "chatbot.html"))
+
+@app.get("/mis", include_in_schema=False)
+async def serve_mis_page():
+    return FileResponse(os.path.join(static_files_path, "mis.html"))
 
 
 # 5. Running the Application
