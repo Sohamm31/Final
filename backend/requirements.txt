@@ -29,13 +29,12 @@ python-docx
 GitPython
 requests
 
-# --- DATABASE DRIVER CHANGE ---
-sqlalchemy # This is already a dependency of other libraries
-psycopg2-binary # <-- ADDED for Postgres
+# Database Connector
+psycopg2-binary
 
 # For handling environment variables
 python-dotenv
 
 # Authentication
-passlib[bcrypt]==5.3.0
+passlib[bcrypt] # <-- CRITICAL FIX: Removed the incorrect version pin
 python-jose[cryptography]
