@@ -1,7 +1,7 @@
 # FastAPI for web framework
 fastapi
 uvicorn[standard]
-gunicorn # <-- ADDED: Production web server
+gunicorn
 
 # LangChain for core AI orchestration
 langchain
@@ -29,9 +29,9 @@ python-docx
 GitPython
 requests
 
-# Database Connector
-mysql-connector-python
-sqlalchemy
+# --- DATABASE DRIVER CHANGE ---
+sqlalchemy # This is already a dependency of other libraries
+psycopg2-binary # <-- ADDED for Postgres
 
 # For handling environment variables
 python-dotenv
