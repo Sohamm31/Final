@@ -8,7 +8,7 @@ import logging
 # --- Database Configuration ---
 # Make sure these details are correct for your MySQL setup.
 # Format: "mysql+mysqlconnector://<user>:<password>@<host>[:<port>]/<database>"
-DATABASE_URL = "mysql+pymysql://root:@127.0.0.1:3307/Final"
+DATABASE_URL = "postgresql://engiconnect_pg_db_user:P5QmnaV3ZhYMwANu7C2AsLO9VYSbbyUY@dpg-d29njcqli9vc73fv4qs0-a/engiconnect_pg_db"
 
 # Create the SQLAlchemy engine
 engine = create_engine(DATABASE_URL)
