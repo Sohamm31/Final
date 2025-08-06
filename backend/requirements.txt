@@ -14,7 +14,7 @@ langchain-chroma
 chromadb
 
 # LLM Provider
-openrouter-api
+openrouter
 
 # Embedding Model
 sentence-transformers
